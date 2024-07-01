@@ -1,0 +1,51 @@
+- name: disabling node.js
+  ansible.builtin.command: dnf module disable nodejs -y
+
+- name: enable node 20
+  ansible.builtin.command: dnf module enable nodejs:20 -y
+
+- name: install nodejs
+  ansible.builtin.dnf:
+    name: nodejs 
+    state: present
+
+- name: adduser
+  ansible.builtin.user:
+    name: expense
+
+- name: run application pre-requisites
+  ansible.builtin.import_role:
+      name: common
+      tasks_from: app-set
+
+- name: install npm dependencies 
+  ansible.builtin.command: npm install
+  args:
+    chdir: "{{app_location}}"
+
+- name: copy {{component}} service 
+  ansible.builtin.copy:
+    src: backend.service
+    dest: /etc/systemd/system/{{component}}.service
+
+- name: daemon-reload
+  ansible.builtin.systemd_service:
+    daemon_reload: true  
+
+- name: start and enabling 
+  ansible.builtin.service:
+    name: "{{component}}"
+    enabled: yes
+    state: started
+
+- name: install mysql 
+  ansible.builtin.command: dnf install mysql -y
+  
+- name: Load Schema
+  ansible.builtin.shell: mysql -h {{mysql_host}} -uroot -p{{mysql_password}} < /app/schema/backend.sql
+
+- name: Restart {{component}} 
+  ansible.builtin.service:
+    name: "{{component}}"
+    state: restarted 
+
