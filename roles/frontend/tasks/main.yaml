@@ -27,10 +27,10 @@
     ansible.builtin.copy:
       src: expense.conf.j2
       dest: /etc/nginx/default.d/expense.conf
-    notify:
-        - Restart nginx
+    # notify:
+    #     - Restart nginx
 
-  # - name: Restart Nginx Service
-  #   ansible.builtin.service:
-  #     name: nginx
-  #     state: restarted
+  - name: Restart Nginx Service
+    ansible.builtin.service:
+      name: nginx
+      state: restarted
