@@ -30,7 +30,7 @@
     notify:
         - Restart nginx
 
-  - name: Restart Nginx Service
-    ansible.builtin.service:
-      name: nginx
-      state: restarted
+  # - name: Restart Nginx Service
+  #   ansible.builtin.service:
+  #     name: nginx
+  #     state: restarted
